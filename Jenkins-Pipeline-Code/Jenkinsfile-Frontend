@@ -59,9 +59,9 @@ pipeline {
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build -t ThreeTierFrontend ."
-                       sh "docker tag tetrisv1 hamzahashmi0333/ThreeTierFrontend:${BUILD_NUMBER}"
-                       sh "docker push hamzahashmi0333/ThreeTierFrontend:${BUILD_NUMBER} "
+                       sh "docker build -t threetierfrontend ."
+                       sh "docker tag tetrisv1 hamzahashmi0333/threetierfrontend:${BUILD_NUMBER}"
+                       sh "docker push hamzahashmi0333/threetierfrontend:${BUILD_NUMBER} "
                     }
                 }
             }
@@ -69,7 +69,7 @@ pipeline {
 
        stage("TRIVY Image Scan") {
             steps {
-                sh 'trivy image hamzahashmi0333/ThreeTierFrontend:${BUILD_NUMBER} > trivyimage.txt' 
+                sh 'trivy image hamzahashmi0333/threetierfrontend:${BUILD_NUMBER} > trivyimage.txt' 
             }
         }
         stage('Checkout Code') {
