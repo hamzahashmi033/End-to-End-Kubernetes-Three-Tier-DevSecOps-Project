@@ -25,7 +25,7 @@ spec:
       - name: ecr-registry-secret
       containers:
       - name: api
-        image: hamzahashmi0333/threetierbackend:${BUILD_NUMBER}
+        image: hamzahashmi0333/threetierbackend:15
         imagePullPolicy: Always
         env:
           - name: MONGO_CONN_STR
