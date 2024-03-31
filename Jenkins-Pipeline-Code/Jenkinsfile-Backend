@@ -55,11 +55,13 @@ pipeline {
         stage("Docker Build & Push"){
             steps{
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build -t ThreeTierBackend ."
-                       sh "docker tag tetrisv1 hamzahashmi0333/ThreeTierBackend:${BUILD_NUMBER}"
-                       sh "docker push hamzahashmi0333/ThreeTierBackend:${BUILD_NUMBER} "
-                    }
+                    dir('Kubernetes-Manifests-file/Backend') {
+                       withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                       sh "docker build -t threetierbackend ."
+                       sh "docker tag tetrisv1 hamzahashmi0333/threetierbackend:${BUILD_NUMBER}"
+                       sh "docker push hamzahashmi0333/threetierbackend:${BUILD_NUMBER} "
+                       }
+                   }
                 }
             }
         }
