@@ -6,6 +6,7 @@ pipeline {
     }
     environment  {
         SCANNER_HOME=tool 'sonar-scanner'
+        
     }
     stages {
         stage('Cleaning Workspace') {
@@ -15,7 +16,7 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                  git credentialsId: 'GITHUB', url: 'https://github.com/hamzahashmi033/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
+                git credentialsId: 'GITHUB', url: 'https://github.com/hamzahashmi033/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
             }
         }
         stage('Sonarqube Analysis') {
@@ -51,19 +52,20 @@ pipeline {
                 }
             }
         }
-       stage("Docker Build & Push"){
+        stage("Docker Build & Push"){
             steps{
                 script{
-                   withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build -t threetierfrontend ."
-                       sh "docker tag tetrisv1 hamzahashmi0333/threetierfrontend:${BUILD_NUMBER}"
-                       sh "docker push hamzahashmi0333/threetierfrontend:${BUILD_NUMBER} "
+                    dir('Application-Code/frontend') {
+                        withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
+                            sh "docker build -t threetierfrontend ."
+                            sh "docker tag threetierbackend hamzahashmi0333/threetierfrontend:${BUILD_NUMBER}"
+                            sh "docker push hamzahashmi0333/threetierfrontend:${BUILD_NUMBER} "
+                        }
                     }
                 }
             }
         }
-
-       stage("TRIVY Image Scan") {
+        stage("TRIVY Image Scan") {
             steps {
                 sh 'trivy image hamzahashmi0333/threetierfrontend:${BUILD_NUMBER} > trivyimage.txt' 
             }
@@ -73,24 +75,20 @@ pipeline {
                 git credentialsId: 'GITHUB', url: 'https://github.com/hamzahashmi033/End-to-End-Kubernetes-Three-Tier-DevSecOps-Project.git'
             }
         }
-       stage('Update Deployment file') {
+        stage('Update Deployment file') {
             environment {
                 GIT_REPO_NAME = "End-to-End-Kubernetes-Three-Tier-DevSecOps-Project"
                 GIT_USER_NAME = "hamzahashmi033"
             }
             steps {
-                dir('Kubernetes-Manifests-file/Frontend') {
+                dir('Kubernetes-Manifests-file/frontend') {
                     withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                           git config user.email "hashmihamza846@gmail.com"
-                            git config user.name "hamzahashmi033"
-                            BUILD_NUMBER=${BUILD_NUMBER}
-                            echo $BUILD_NUMBER
-                            sed -i 's+hamzahashmi0333/ThreeTierFrontend.*+hamzahashmi0333/ThreeTierFrontend:${${BUILD_NUMBER}}+g' deployment.yml
-                            git add deployment.yaml
-                            git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
-                            git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
-                        '''
+                       sh "git config user.email hashmihamza846@gmail.com"
+                       sh "git config user.name hamzahashmi033"
+                       sh "sed -i 's+hamzahashmi0333/threetierfrontend.*+hamzahashmi0333/threetierfrontend:${BUILD_NUMBER}+g' deployment.yaml"
+                       sh 'git add deployment.yaml'
+                       sh "git commit -m 'Update deployment image to hamzahashmi0333/threetierfrontend:${BUILD_NUMBER}'"
+                       sh "git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:master"
                     }
                 }
             }
