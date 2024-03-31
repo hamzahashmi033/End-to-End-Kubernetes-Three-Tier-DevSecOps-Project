@@ -55,10 +55,10 @@ pipeline {
         stage("Docker Build & Push"){
             steps{
                 script{
-                    dir('Kubernetes-Manifests-file/Backend') {
+                    dir('Kubernetes-Manifests-file/backend') {
                        withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
                        sh "docker build -t threetierbackend ."
-                       sh "docker tag tetrisv1 hamzahashmi0333/threetierbackend:${BUILD_NUMBER}"
+                       sh "docker tag threetierbackend hamzahashmi0333/threetierbackend:${BUILD_NUMBER}"
                        sh "docker push hamzahashmi0333/threetierbackend:${BUILD_NUMBER} "
                        }
                    }
@@ -88,7 +88,7 @@ pipeline {
                             git config user.name "hamzahashmi033"
                             BUILD_NUMBER=${BUILD_NUMBER}
                             echo $BUILD_NUMBER
-                            sh "sed -i 's+hamzahashmi0333/ThreeTierBackend.*+hamzahashmi0333/ThreeTierBackend:${${BUILD_NUMBER}}+g' deployment.yml"    
+                            sh "sed -i 's+hamzahashmi0333/ThreeTierBackend.*+hamzahashmi0333/ThreeTierBackend:${${BUILD_NUMBER}}+g' deployment.yaml"    
                             git add deployment.yaml
                             git commit -m "Update deployment Image to version \${BUILD_NUMBER}"
                             git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:master
