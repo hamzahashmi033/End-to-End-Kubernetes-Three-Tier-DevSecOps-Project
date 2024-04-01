@@ -7,6 +7,6 @@ spec:
   ports:
   - port: 3000
     protocol: TCP
-  type: LoadBalancer  # Changed from ClusterIP to LoadBalancer
+  type: ClusterIP  # Changed from ClusterIP to LoadBalancer
   selector:
     role: frontend
