@@ -21,12 +21,9 @@ spec:
       labels:
         role: api
     spec:
-      imagePullSecrets:
-      - name: ecr-registry-secret
       containers:
       - name: api
         image: hamzahashmi0333/threetierbackend:16
-        imagePullPolicy: Always
         env:
           - name: MONGO_CONN_STR
             value: mongodb://mongodb-svc:27017/todo?directConnection=true
